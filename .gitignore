@@ -1,4 +1,6 @@
 .gradle
+WallpaperApp.iml
+/.idea
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
