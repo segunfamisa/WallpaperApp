@@ -1,4 +1,4 @@
-package com.segunfamisa.wallpaperapp.model;
+package com.segunfamisa.wallpaperapp.data.model;
 
 /**
  * Base Model
