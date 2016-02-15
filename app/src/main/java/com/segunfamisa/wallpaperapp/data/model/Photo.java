@@ -12,28 +12,28 @@ import java.util.ArrayList;
 public class Photo {
 
     @SerializedName("id")
-    private String id;
+     String id;
 
     @SerializedName("width")
-    private int width;
+     int width;
 
     @SerializedName("height")
-    private int height;
+     int height;
 
     @SerializedName("color")
-    private String color;
+     String color;
 
     @SerializedName("user")
-    private User user;
+     User user;
 
     @SerializedName("urls")
-    private PhotoUrls photoUrls;
+     PhotoUrls photoUrls;
 
     @SerializedName("categories")
-    private ArrayList<Category> categories;
+     ArrayList<Category> categories;
 
     @SerializedName("links")
-    private PhotoLinks links;
+     PhotoLinks links;
 
     public String getId() {
         return id;

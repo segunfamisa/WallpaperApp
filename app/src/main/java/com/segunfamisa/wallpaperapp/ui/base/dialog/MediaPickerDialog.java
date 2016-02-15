@@ -1,4 +1,4 @@
-package com.segunfamisa.wallpaperapp.ui.fragments.dialog;
+package com.segunfamisa.wallpaperapp.ui.base.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -19,8 +19,8 @@ import android.view.Window;
 
 
 import com.segunfamisa.wallpaperapp.R;
-import com.segunfamisa.wallpaperapp.ui.activities.BaseActivity;
-import com.segunfamisa.wallpaperapp.ui.fragments.BaseFragment;
+import com.segunfamisa.wallpaperapp.ui.base.BaseActivity;
+import com.segunfamisa.wallpaperapp.ui.base.BaseFragment;
 import com.segunfamisa.wallpaperapp.utils.Logger;
 
 import java.io.File;

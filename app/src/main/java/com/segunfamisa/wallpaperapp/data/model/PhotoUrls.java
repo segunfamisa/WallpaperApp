@@ -11,16 +11,16 @@ import org.parceler.Parcel;
 public class PhotoUrls {
 
     @SerializedName("full")
-    private String full;
+     String full;
 
     @SerializedName("regular")
-    private String regular;
+     String regular;
 
     @SerializedName("small")
-    private String small;
+     String small;
 
     @SerializedName("thumb")
-    private String thumb;
+     String thumb;
 
     public String getFull() {
         return full;

@@ -6,6 +6,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
 
+import java.util.ArrayList;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -20,17 +24,26 @@ public interface PhotoService {
 
     String BASE_URL = "https://api.unsplash.com/";
 
-    String CLIENT_ID = "8c63042b7286eac89ac8c9c73673d368c89dbc2575ba29dcb0a3b3b25880b2f6";
+    String CLIENT_ID = "<add your client id here>";
 
-    @GET("/photos/?" + CLIENT_ID)
-    Observable<Photo> getPhotos();
+    @GET("/photos/?client_id=" + CLIENT_ID)
+    Observable<ArrayList<Photo>> getPhotos();
 
     /**
      * helper class to create new services
      */
     class Creator {
 
-        public static ApiService newPhotoService() {
+        public static PhotoService newPhotoService() {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            // set your desired log level
+            logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            // add your other interceptors …
+
+            // add logging as last interceptor
+            httpClient.addInterceptor(logging);
+
             Gson gson = new GsonBuilder()
                     .create();
 
@@ -38,9 +51,10 @@ public interface PhotoService {
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .client(httpClient.build())
                     .build();
 
-            return retrofit.create(ApiService.class);
+            return retrofit.create(PhotoService.class);
         }
     }
 }

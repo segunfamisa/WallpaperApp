@@ -13,16 +13,16 @@ import org.parceler.Parcel;
 public class User {
 
     @SerializedName("id")
-    private String id;
+     String id;
 
     @SerializedName("username")
-    private String username;
+     String username;
 
     @SerializedName("name")
-    private String name;
+     String name;
 
     @SerializedName("profile_image")
-    private UserProfileImages profileImage;
+     UserProfileImages profileImage;
 
 
     public String getId() {

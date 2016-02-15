@@ -11,13 +11,13 @@ import org.parceler.Parcel;
 public class Category {
 
     @SerializedName("id")
-    private String id;
+    String id;
 
     @SerializedName("title")
-    private String title;
+    String title;
 
     @SerializedName("photo_count")
-    private String photoCount;
+    String photoCount;
 
     public String getId() {
         return id;

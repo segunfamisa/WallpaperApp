@@ -1,4 +1,4 @@
-package com.segunfamisa.wallpaperapp.ui.fragments.dialog;
+package com.segunfamisa.wallpaperapp.ui.base.dialog;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;

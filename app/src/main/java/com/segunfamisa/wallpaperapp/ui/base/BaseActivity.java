@@ -1,4 +1,4 @@
-package com.segunfamisa.wallpaperapp.ui.activities;
+package com.segunfamisa.wallpaperapp.ui.base;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,19 +19,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private ActivityComponent mActivityComponent;
 
-    @Inject
-    PreferenceUtils mPrefs;
-
-    @Inject
-    Navigator mNavigator;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.getApplicationComponent().inject(this);
-        mPrefs = getApplicationComponent().preferenceUtils();
-        mNavigator = getApplicationComponent().navigator();
     }
 
     /**

@@ -12,13 +12,13 @@ import org.parceler.Parcel;
 public class UserProfileImages {
 
     @SerializedName("small")
-    private String small;
+     String small;
 
     @SerializedName("medium")
-    private String medium;
+     String medium;
 
     @SerializedName("large")
-    private String large;
+     String large;
 
     public String getSmall() {
         return small;

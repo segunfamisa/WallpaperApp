@@ -1,4 +1,4 @@
-package com.segunfamisa.wallpaperapp.ui.fragments;
+package com.segunfamisa.wallpaperapp.ui.base;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

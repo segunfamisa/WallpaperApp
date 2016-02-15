@@ -11,13 +11,13 @@ import org.parceler.Parcel;
 public class PhotoLinks {
 
     @SerializedName("self")
-    private String self;
+     String self;
 
     @SerializedName("html")
-    private String html;
+     String html;
 
     @SerializedName("download")
-    private String download;
+     String download;
 
     public String getSelf() {
         return self;

@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.segunfamisa.wallpaperapp.App;
+import com.segunfamisa.wallpaperapp.data.api.PhotoService;
+import com.segunfamisa.wallpaperapp.data.model.Photo;
 import com.segunfamisa.wallpaperapp.navigator.Navigator;
 import com.segunfamisa.wallpaperapp.utils.PreferenceUtils;
 
@@ -46,5 +48,11 @@ public class ApplicationModule {
     @Singleton
     PreferenceUtils providePreferences(Application application) {
         return PreferenceUtils.init(application);
+    }
+
+    @Provides
+    @Singleton
+    PhotoService providePhotoService() {
+        return PhotoService.Creator.newPhotoService();
     }
 }
