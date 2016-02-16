@@ -16,9 +16,11 @@ public class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    public void inject(BaseFragment fragment) {
         //inject
-
+        ((BaseActivity)getActivity()).getActivityComponent().inject(fragment);
     }
 
     public App getApplication() {

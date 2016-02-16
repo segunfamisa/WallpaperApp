@@ -38,7 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      *
      * @return {@link ActivityComponent}
      */
-    protected ActivityComponent getActivityComponent() {
+    public ActivityComponent getActivityComponent() {
         if(mActivityComponent == null) {
             mActivityComponent = DaggerActivityComponent.builder()
                     .applicationComponent(getApplicationComponent())

@@ -24,8 +24,6 @@ import dagger.Component;
 @Component(modules = ApplicationModule.class)
 public interface ApplicationComponent {
     void inject(App app);
-    void inject(BaseActivity baseActivity);
-    void inject(BaseFragment baseFragment);
 
     Context context();
     Application application();

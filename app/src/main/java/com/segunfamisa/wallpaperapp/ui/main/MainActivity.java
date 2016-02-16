@@ -1,53 +1,42 @@
 package com.segunfamisa.wallpaperapp.ui.main;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.segunfamisa.wallpaperapp.R;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
 import com.segunfamisa.wallpaperapp.ui.base.BaseActivity;
+import com.segunfamisa.wallpaperapp.ui.photos.PhotosFragment;
 import com.segunfamisa.wallpaperapp.utils.Logger;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-public class MainActivity extends BaseActivity implements MainMVPView {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+public class MainActivity extends BaseActivity {
 
     private static final String TAG = "NOK";
 
-    @Inject
-    MainPresenter mMainPresenter;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivityComponent().inject(this);
         setContentView(R.layout.activity_main);
 
-        mMainPresenter.attachView(this);
+        ButterKnife.bind(this);
 
-        mMainPresenter.getPhotos();
+        toolbar.setTitle("Graffiti");
+
+        if(savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new PhotosFragment(), PhotosFragment.class.getName())
+                    .commit();
+        }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        mMainPresenter.detachView();
-    }
-
-    @Override
-    public void onLoadPhotosCompleted() {
-        Logger.i(TAG, "Photos loaded successfully");
-    }
-
-    @Override
-    public void onLoadPhotos(ArrayList<Photo> photos) {
-        Logger.d(TAG, photos != null ? photos.size()+" photos" : "Photos is null");
-    }
-
-    @Override
-    public void onLoadPhotosError(String message) {
-        Logger.e(TAG, message);
-    }
 }

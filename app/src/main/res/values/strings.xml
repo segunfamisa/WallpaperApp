@@ -10,4 +10,7 @@
     <string name="picker_error_video">Unable to create video</string>
     <string name="picker_title_image">Choose from gallery</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
