@@ -4,6 +4,10 @@ import android.app.Application;
 import android.content.Context;
 
 import com.segunfamisa.wallpaperapp.App;
+import com.segunfamisa.wallpaperapp.data.api.PhotoService;
+import com.segunfamisa.wallpaperapp.data.model.Photo;
+import com.segunfamisa.wallpaperapp.navigator.Navigator;
+import com.segunfamisa.wallpaperapp.utils.PreferenceUtils;
 
 import javax.inject.Singleton;
 
@@ -16,7 +20,7 @@ import dagger.Provides;
 @Module
 public class ApplicationModule {
 
-    App mApplication;
+    Application mApplication;
 
     public ApplicationModule(App application) {
         mApplication = application;
@@ -32,5 +36,23 @@ public class ApplicationModule {
     @Singleton
     Context provideAppContext() {
         return mApplication.getApplicationContext();
+    }
+
+    @Provides
+    @Singleton
+    Navigator provideNavigator() {
+        return new Navigator();
+    }
+
+    @Provides
+    @Singleton
+    PreferenceUtils providePreferences(Application application) {
+        return PreferenceUtils.init(application);
+    }
+
+    @Provides
+    @Singleton
+    PhotoService providePhotoService() {
+        return PhotoService.Creator.newPhotoService();
     }
 }
