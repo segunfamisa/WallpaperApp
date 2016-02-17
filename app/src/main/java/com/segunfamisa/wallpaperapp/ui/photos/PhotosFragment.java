@@ -2,10 +2,13 @@ package com.segunfamisa.wallpaperapp.ui.photos;
 
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -15,6 +18,7 @@ import com.segunfamisa.wallpaperapp.data.model.Photo;
 import com.segunfamisa.wallpaperapp.ui.adapters.PhotoListAdapter;
 import com.segunfamisa.wallpaperapp.ui.base.BaseActivity;
 import com.segunfamisa.wallpaperapp.ui.base.BaseFragment;
+import com.segunfamisa.wallpaperapp.utils.Config;
 import com.segunfamisa.wallpaperapp.utils.DialogUtils;
 import com.segunfamisa.wallpaperapp.utils.Logger;
 
@@ -42,6 +46,8 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
     @Bind(R.id.progress_loading)
     ProgressBar mProgressLoading;
 
+    @Bind(R.id.swiperefresh_layout)
+    SwipeRefreshLayout mSwipeLayout;
 
     public PhotosFragment() {
         // Required empty public constructor
@@ -50,6 +56,9 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -61,7 +70,24 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
         ((BaseActivity)getActivity()).getActivityComponent().inject(this);
         mPhotosPresenter.attachView(this);
 
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_photo_list, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                // TODO: 17/02/2016 navigate to settings
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -72,7 +98,21 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
         mRecyclerPhotos.setAdapter(mAdapter);
         mRecyclerPhotos.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        mPhotosPresenter.getPhotos();
+        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                boolean hasLoadedToday = true;
+                if(hasLoadedToday) {
+                    DialogUtils.createSimpleOkDialog(getContext(), "We've delivered for today",
+                            "Bummer :( . It looks like we've delivered today's wallpapers. Check again tomorrow").show();
+                } else {
+                    //get photos
+                    mPhotosPresenter.getPhotos(Config.PHOTOS_PER_PAGE);
+                }
+            }
+        });
+
+        mPhotosPresenter.getPhotos(Config.PHOTOS_PER_PAGE);
     }
 
     @Override
@@ -100,6 +140,7 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
     @Override
     public void showProgress(boolean show) {
         mProgressLoading.setVisibility(show ? View.VISIBLE : View.GONE);
+        mSwipeLayout.setRefreshing(show);
     }
 
     @Override

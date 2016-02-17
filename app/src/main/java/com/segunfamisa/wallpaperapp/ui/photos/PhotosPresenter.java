@@ -40,13 +40,13 @@ public class PhotosPresenter implements Presenter<PhotosMVPView> {
         }
     }
 
-    public void getPhotos() {
+    public void getPhotos(int count) {
         mPhotosMVPView.showProgress(true);
         if(mSubscription != null) {
             mSubscription.unsubscribe();
         }
 
-        mSubscription = mDataManager.getPhotos()
+        mSubscription = mDataManager.getPhotos(count)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<ArrayList<Photo>>() {

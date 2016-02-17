@@ -24,10 +24,10 @@ public interface PhotoService {
 
     String BASE_URL = "https://api.unsplash.com/";
 
-    String CLIENT_ID = "<add your client id here>";
+    String CLIENT_ID = "8c63042b7286eac89ac8c9c73673d368c89dbc2575ba29dcb0a3b3b25880b2f6";
 
     @GET("/photos/?client_id=" + CLIENT_ID)
-    Observable<ArrayList<Photo>> getPhotos();
+    Observable<ArrayList<Photo>> getPhotos(@Query("per_page")int count);
 
     /**
      * helper class to create new services

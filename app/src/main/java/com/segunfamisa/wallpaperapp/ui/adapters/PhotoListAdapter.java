@@ -50,6 +50,7 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.Phot
 
         Glide.with(holder.photo.getContext())
                 .load(photo.getPhotoUrls().getSmall())
+                .placeholder(R.drawable.ic_photo_placeholder)
                 .into(holder.photo);
     }
 
