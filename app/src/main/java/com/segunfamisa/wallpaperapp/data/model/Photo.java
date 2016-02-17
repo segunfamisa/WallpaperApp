@@ -2,6 +2,8 @@ package com.segunfamisa.wallpaperapp.data.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 
 /**
@@ -9,6 +11,7 @@ import java.util.ArrayList;
  *
  * Created by segun.famisa on 15/02/2016.
  */
+@Parcel
 public class Photo {
 
     @SerializedName("id")

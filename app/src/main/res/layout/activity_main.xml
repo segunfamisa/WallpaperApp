@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".ui.main.MainActivity">
@@ -10,10 +11,26 @@
     <include
         layout="@layout/toolbar" />
 
-    <FrameLayout
-        android:id="@+id/container"
+    <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/photo_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"
+            app:layout_heightPercent="70%"
+            app:layout_widthPercent="100%">
+
+        </FrameLayout>
+
+    </android.support.percent.PercentRelativeLayout>
 
 </LinearLayout>

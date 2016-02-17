@@ -1,10 +1,13 @@
 package com.segunfamisa.wallpaperapp.ui.photos;
 
 
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Fade;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,12 +15,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.segunfamisa.wallpaperapp.R;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
 import com.segunfamisa.wallpaperapp.ui.adapters.PhotoListAdapter;
 import com.segunfamisa.wallpaperapp.ui.base.BaseActivity;
 import com.segunfamisa.wallpaperapp.ui.base.BaseFragment;
+import com.segunfamisa.wallpaperapp.ui.detail.PhotoDetailsFragment;
+import com.segunfamisa.wallpaperapp.ui.widget.transitions.PhotoTransition;
 import com.segunfamisa.wallpaperapp.utils.Config;
 import com.segunfamisa.wallpaperapp.utils.DialogUtils;
 import com.segunfamisa.wallpaperapp.utils.Logger;
@@ -32,7 +38,7 @@ import butterknife.ButterKnife;
 /**
  * A fragment to show the photos.
  */
-public class PhotosFragment extends BaseFragment implements PhotosMVPView{
+public class PhotosFragment extends BaseFragment implements PhotosMvpView {
 
     @Inject
     PhotosPresenter mPhotosPresenter;
@@ -70,14 +76,13 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
         ((BaseActivity)getActivity()).getActivityComponent().inject(this);
         mPhotosPresenter.attachView(this);
 
-
         return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.menu_photo_list, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -102,13 +107,36 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
             @Override
             public void onRefresh() {
                 boolean hasLoadedToday = true;
-                if(hasLoadedToday) {
-                    DialogUtils.createSimpleOkDialog(getContext(), "We've delivered for today",
-                            "Bummer :( . It looks like we've delivered today's wallpapers. Check again tomorrow").show();
+                if (hasLoadedToday) {
+                    mSwipeLayout.setRefreshing(false);
+                    DialogUtils.createSimpleOkDialog(getContext(), getString(R.string.dialog_daily_limit_title),
+                            getString(R.string.dialog_daily_limit_message)).show();
                 } else {
                     //get photos
                     mPhotosPresenter.getPhotos(Config.PHOTOS_PER_PAGE);
                 }
+            }
+        });
+
+        mAdapter.setPhotoClickListener(new PhotoListAdapter.OnPhotoClickedListener() {
+            @Override
+            public void OnPhotoClicked(int position, Photo photo, View view) {
+
+                Fragment frag = PhotoDetailsFragment.newInstance(photo);
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    frag.setSharedElementEnterTransition(new PhotoTransition());
+                    frag.setEnterTransition(new Fade());
+                    setExitTransition(new Fade());
+                    frag.setSharedElementReturnTransition(new PhotoTransition());
+                }
+
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .addSharedElement(view, "photo")
+                        .replace(R.id.photo_container, frag)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
@@ -123,12 +151,11 @@ public class PhotosFragment extends BaseFragment implements PhotosMVPView{
 
     @Override
     public void onLoadPhotosCompleted() {
-        Logger.i("NOK", "Photos loaded successfully");
+
     }
 
     @Override
     public void onLoadPhotos(ArrayList<Photo> photos) {
-        Logger.d("NOK", (photos == null ? 0 : photos.size()) + " photos loaded");
         mAdapter.setPhotos(photos);
     }
 

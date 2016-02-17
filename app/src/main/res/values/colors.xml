@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#2B2B2B</color>
     <color name="colorAccent">#60C28A</color>
     <color name="windowBackground">#282828</color>
+
+    <color name="default_overlay_color">#AAFFFFFF</color>
 </resources>
