@@ -16,10 +16,10 @@ import rx.schedulers.Schedulers;
 /**
  * Created by segun.famisa on 16/02/2016.
  */
-public class PhotosPresenter implements Presenter<PhotosMVPView> {
+public class PhotosPresenter implements Presenter<PhotosMvpView> {
 
     private DataManager mDataManager;
-    private PhotosMVPView mPhotosMVPView;
+    private PhotosMvpView mPhotosView;
     private Subscription mSubscription;
 
     @Inject
@@ -28,47 +28,47 @@ public class PhotosPresenter implements Presenter<PhotosMVPView> {
     }
 
     @Override
-    public void attachView(PhotosMVPView mvpView) {
-        mPhotosMVPView = mvpView;
+    public void attachView(PhotosMvpView mvpView) {
+        mPhotosView = mvpView;
     }
 
     @Override
     public void detachView() {
-        mPhotosMVPView = null;
+        mPhotosView = null;
         if(mSubscription != null) {
             mSubscription.unsubscribe();
         }
     }
 
-    public void getPhotos() {
-        mPhotosMVPView.showProgress(true);
+    public void getPhotos(int count) {
+        mPhotosView.showProgress(true);
         if(mSubscription != null) {
             mSubscription.unsubscribe();
         }
 
-        mSubscription = mDataManager.getPhotos()
+        mSubscription = mDataManager.getPhotos(count)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<ArrayList<Photo>>() {
                     @Override
                     public void onCompleted() {
-                        mPhotosMVPView.onLoadPhotosCompleted();
-                        mPhotosMVPView.showProgress(false);
+                        mPhotosView.onLoadPhotosCompleted();
+                        mPhotosView.showProgress(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mPhotosMVPView.onLoadPhotosError(e.getMessage());
-                        mPhotosMVPView.showProgress(false);
+                        mPhotosView.onLoadPhotosError(e.getMessage());
+                        mPhotosView.showProgress(false);
                     }
 
                     @Override
                     public void onNext(ArrayList<Photo> photos) {
-                        mPhotosMVPView.onLoadPhotos(photos);
-                        mPhotosMVPView.showProgress(false);
+                        mPhotosView.onLoadPhotos(photos);
+                        mPhotosView.showProgress(false);
 
                         if(photos == null || photos.isEmpty()) {
-                            mPhotosMVPView.showEmptyView();
+                            mPhotosView.showEmptyView();
                         }
                     }
                 });

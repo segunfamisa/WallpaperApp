@@ -2,6 +2,7 @@ package com.segunfamisa.wallpaperapp.ui.main;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 
 import com.segunfamisa.wallpaperapp.R;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
@@ -20,17 +21,12 @@ public class MainActivity extends BaseActivity {
 
     private static final String TAG = "NOK";
 
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-
-        toolbar.setTitle("Graffiti");
 
         if(savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -39,4 +35,8 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
 }

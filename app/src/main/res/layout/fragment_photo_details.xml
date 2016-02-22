@@ -1,0 +1,70 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/windowBackground"
+    tools:context="com.segunfamisa.wallpaperapp.ui.detail.PhotoDetailsFragment"
+    android:clickable="true">
+
+    <!-- ImageView -->
+    <ImageView
+        android:id="@+id/imageview_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:transitionName="photoImage"/>
+
+    <!-- toolbar -->
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <!-- Layout for details -->
+    <RelativeLayout
+        android:id="@+id/layout_details"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text_photo_owner_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="#F1F1F1"/>
+
+        <TextView
+            android:id="@+id/text_photo_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_below="@id/text_photo_owner_name"
+            android:textColor="#FFFFFF"
+            android:paddingTop="8dp"/>
+
+    </RelativeLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fab_icon="@drawable/ic_photo_placeholder"
+        app:fab_colorNormal="#F1f1f1"
+        app:fab_colorPressed="#f1f1f1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        android:layout_margin="@dimen/fab_margin"/>
+
+</RelativeLayout>

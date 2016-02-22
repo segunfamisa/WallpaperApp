@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by segun.famisa on 16/02/2016.
  */
-public interface PhotosMVPView extends MVPView {
+public interface PhotosMvpView extends MVPView {
 
     void onLoadPhotosCompleted();
 

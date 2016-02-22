@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.segunfamisa.wallpaperapp.ui.widget.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:id="@+id/photo_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#3C3F41"
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground">
 
     <!-- ImageView -->
     <ImageView
         android:id="@+id/imageview_photo"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_width="match_parent"
         android:scaleType="centerCrop"/>
 
 </com.segunfamisa.wallpaperapp.ui.widget.SquareFrameLayout>

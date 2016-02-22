@@ -24,7 +24,7 @@ public class DataManager {
         this.mPhotoService = photoService;
     }
 
-    public Observable<ArrayList<Photo>> getPhotos() {
-        return mPhotoService.getPhotos();
+    public Observable<ArrayList<Photo>> getPhotos(int count) {
+        return mPhotoService.getPhotos(count);
     }
 }

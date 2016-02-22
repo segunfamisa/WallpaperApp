@@ -59,7 +59,7 @@ public class DialogUtils {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setNeutralButton(okButtonText, okClickListener);
+                .setPositiveButton(okButtonText, okClickListener);
         return alertDialog.create();
     }
 

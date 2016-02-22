@@ -10,6 +10,16 @@
     <string name="picker_error_video">Unable to create video</string>
     <string name="picker_title_image">Choose from gallery</string>
 
+    <!-- menu -->
+    <string name="menu_settings">Settings</string>
+
+    <!-- error dialog daily limit title -->
+    <string name="dialog_daily_limit_title">Bummer :(</string>
+
+    <!-- error dialog daily limit message -->
+    <string name="dialog_daily_limit_message">Uhmm…It looks like we\'ve delivered today\'s wallpapers.
+        We\'ll deliver a fresh set tomorrow</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
