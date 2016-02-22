@@ -1,6 +1,8 @@
 package com.segunfamisa.wallpaperapp.ui.widget;
 
 /**
+ * Original source here: https://github.com/500px/500px-android-blur/blob/master/blurringview/src/main/java/com/fivehundredpx/android/blur/BlurringView.java
+ *
  * Created by segun.famisa on 17/02/2016.
  */
 import android.content.Context;

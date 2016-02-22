@@ -1,13 +1,17 @@
 package com.segunfamisa.wallpaperapp.ui.photos;
 
 
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +32,9 @@ import com.segunfamisa.wallpaperapp.utils.Config;
 import com.segunfamisa.wallpaperapp.utils.DialogUtils;
 import com.segunfamisa.wallpaperapp.utils.Logger;
 
+import org.parceler.Parcel;
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -39,6 +46,7 @@ import butterknife.ButterKnife;
  * A fragment to show the photos.
  */
 public class PhotosFragment extends BaseFragment implements PhotosMvpView {
+    private static final String ARG_PHOTOS = "arg_photos";
 
     @Inject
     PhotosPresenter mPhotosPresenter;
@@ -46,14 +54,11 @@ public class PhotosFragment extends BaseFragment implements PhotosMvpView {
     @Inject
     PhotoListAdapter mAdapter;
 
-    @Bind(R.id.recyclerview_photos)
-    RecyclerView mRecyclerPhotos;
 
-    @Bind(R.id.progress_loading)
-    ProgressBar mProgressLoading;
-
-    @Bind(R.id.swiperefresh_layout)
-    SwipeRefreshLayout mSwipeLayout;
+    @Bind(R.id.recyclerview_photos) RecyclerView mRecyclerPhotos;
+    @Bind(R.id.progress_loading) ProgressBar mProgressLoading;
+    @Bind(R.id.swiperefresh_layout) SwipeRefreshLayout mSwipeLayout;
+    @Bind(R.id.toolbar) Toolbar toolbar;
 
     public PhotosFragment() {
         // Required empty public constructor
@@ -64,7 +69,6 @@ public class PhotosFragment extends BaseFragment implements PhotosMvpView {
         super.onCreate(savedInstanceState);
 
         setRetainInstance(true);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -99,6 +103,26 @@ public class PhotosFragment extends BaseFragment implements PhotosMvpView {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if(savedInstanceState != null) {
+            if(savedInstanceState.containsKey(ARG_PHOTOS)) {
+                mAdapter.setPhotos(Parcels.<ArrayList<Photo>>unwrap(savedInstanceState.getParcelable(ARG_PHOTOS)));
+            }
+        } else {
+            mPhotosPresenter.getPhotos(Config.PHOTOS_PER_PAGE);
+        }
+
+        toolbar.setTitle("Graffiti");
+        toolbar.inflateMenu(R.menu.menu_photo_list);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+
+                }
+                return false;
+            }
+        });
+
         mRecyclerPhotos.setHasFixedSize(true);
         mRecyclerPhotos.setAdapter(mAdapter);
         mRecyclerPhotos.setLayoutManager(new GridLayoutManager(getActivity(), 2));
@@ -119,6 +143,7 @@ public class PhotosFragment extends BaseFragment implements PhotosMvpView {
         });
 
         mAdapter.setPhotoClickListener(new PhotoListAdapter.OnPhotoClickedListener() {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void OnPhotoClicked(int position, Photo photo, View view) {
 
@@ -127,20 +152,31 @@ public class PhotosFragment extends BaseFragment implements PhotosMvpView {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     frag.setSharedElementEnterTransition(new PhotoTransition());
                     frag.setEnterTransition(new Fade());
+
                     setExitTransition(new Fade());
                     frag.setSharedElementReturnTransition(new PhotoTransition());
                 }
 
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .addSharedElement(view, "photo")
-                        .replace(R.id.photo_container, frag)
+                        .addSharedElement(view, "image")
+                        .add(R.id.container, frag)
                         .addToBackStack(null)
                         .commit();
             }
         });
 
-        mPhotosPresenter.getPhotos(Config.PHOTOS_PER_PAGE);
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(outState != null) {
+            if(!mAdapter.getPhotos().isEmpty()) {
+                outState.putParcelable(ARG_PHOTOS, Parcels.wrap(mAdapter.getPhotos()));
+            }
+        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override

@@ -10,8 +10,8 @@
     <!-- ImageView -->
     <ImageView
         android:id="@+id/imageview_photo"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_width="match_parent"
         android:scaleType="centerCrop"/>
 
 </com.segunfamisa.wallpaperapp.ui.widget.SquareFrameLayout>

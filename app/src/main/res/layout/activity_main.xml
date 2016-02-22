@@ -8,26 +8,10 @@
     android:orientation="vertical"
     tools:context=".ui.main.MainActivity">
 
-    <include
-        layout="@layout/toolbar" />
-
-    <android.support.percent.PercentRelativeLayout
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/photo_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </FrameLayout>
-
-    </android.support.percent.PercentRelativeLayout>
+    </FrameLayout>
 
 </LinearLayout>

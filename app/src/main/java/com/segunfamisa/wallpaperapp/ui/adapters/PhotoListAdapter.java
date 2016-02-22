@@ -44,6 +44,10 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.Phot
         notifyDataSetChanged();
     }
 
+    public ArrayList<Photo> getPhotos() {
+        return this.photos;
+    }
+
     @Override
     public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -61,7 +65,7 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.Phot
                 .placeholder(R.drawable.ic_photo_placeholder)
                 .into(holder.photo);
 
-        ViewCompat.setTransitionName(holder.photo, String.valueOf(position) + "_image");
+        ViewCompat.setTransitionName(holder.photo, String.valueOf(position) + "");
         holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

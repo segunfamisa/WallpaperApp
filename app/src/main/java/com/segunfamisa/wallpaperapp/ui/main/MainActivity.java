@@ -21,17 +21,12 @@ public class MainActivity extends BaseActivity {
 
     private static final String TAG = "NOK";
 
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-
-        toolbar.setTitle("Graffiti");
 
         if(savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
