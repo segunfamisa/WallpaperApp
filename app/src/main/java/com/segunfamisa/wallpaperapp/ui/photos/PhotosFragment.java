@@ -159,7 +159,7 @@ public class PhotosFragment extends BaseFragment implements PhotosMvpView {
 
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .addSharedElement(view, "image")
+                        .addSharedElement(view, "photoImage")
                         .add(R.id.container, frag)
                         .addToBackStack(null)
                         .commit();
