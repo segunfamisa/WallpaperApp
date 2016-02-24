@@ -116,6 +116,13 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         Bundle args = getArguments();
         mPhoto = Parcels.unwrap(args.getParcelable(ARG_PHOTO));
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         mBackDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_action_nav_back);
         toolbar.setNavigationIcon(mBackDrawable);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -143,8 +150,18 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         }
 
         mFabDownload.setOnClickListener(this);
+    }
 
-        return view;
+    @Override
+    public void onClick(View v) {
+        if (v == mFabDownload) {
+            //check permission for storage
+            if(checkForStoragePermission()) {
+                //start download service
+            }
+        } else if (v == mFabSetWallpaper) {
+
+        }
     }
 
     /**
@@ -164,51 +181,16 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         if (s == null) {
             s = palette.getMutedSwatch();
         }
-
         if (s != null) {
             mBackDrawable.setColorFilter(s.getRgb(), PorterDuff.Mode.MULTIPLY);
             fabMenu.setMenuButtonColorNormal(palette.getVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
-            mFabDownload.setColorNormal(palette.getDarkVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+
+            mFabDownload.setColorNormal(palette.getLightVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+            mFabDownload.setColorPressed(palette.getDarkVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark)));
+
             mFabSetWallpaper.setColorNormal(palette.getMutedColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+            mFabSetWallpaper.setColorPressed(palette.getDarkMutedColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark)));
         }
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v == mFabDownload) {
-            //check permission for storage
-            if(checkForStoragePermission()) {
-                saveFile(bitmap, getOutputMediaFile());
-            }
-        } else if (v == mFabSetWallpaper) {
-
-        }
-    }
-
-    private boolean saveFile(Bitmap bitmap, File file) {
-        if(file != null && bitmap != null) {
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(file);
-                return bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            } catch (FileNotFoundException fnfe) {
-                fnfe.printStackTrace();
-            } finally {
-                try {
-                    if(out != null) {
-                        out.close();
-                    }
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -243,33 +225,6 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    /**
-     * Create a File for saving an image or video
-     */
-    private File getOutputMediaFile(){
-        //check storage state
-        if(Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)){
-            File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), getString(R.string.app_name));
-            // Create the storage directory if it does not exist
-            if (! mediaStorageDir.exists()){
-                boolean created = mediaStorageDir.mkdirs();
-                boolean isDirectory = mediaStorageDir.isDirectory();
-
-                if (! (created || isDirectory)){
-
-                    return null;
-                }
-            }
-
-            // Create a media file name
-            File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    mPhoto.getId() + ".jpg");
-            return mediaFile;
-        }
-        return null;
     }
 
     /**

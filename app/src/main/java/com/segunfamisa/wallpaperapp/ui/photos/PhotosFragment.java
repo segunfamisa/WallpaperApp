@@ -24,6 +24,8 @@ import android.widget.Toast;
 import com.segunfamisa.wallpaperapp.R;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
 import com.segunfamisa.wallpaperapp.ui.adapters.PhotoListAdapter;
+import com.segunfamisa.wallpaperapp.ui.animator.ItemAnimatorHelper;
+import com.segunfamisa.wallpaperapp.ui.animator.ScaleInAnimator;
 import com.segunfamisa.wallpaperapp.ui.base.BaseActivity;
 import com.segunfamisa.wallpaperapp.ui.base.BaseFragment;
 import com.segunfamisa.wallpaperapp.ui.detail.PhotoDetailsFragment;
@@ -126,6 +128,8 @@ public class PhotosFragment extends BaseFragment implements PhotosMvpView {
         mRecyclerPhotos.setHasFixedSize(true);
         mRecyclerPhotos.setAdapter(mAdapter);
         mRecyclerPhotos.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        mRecyclerPhotos.setItemAnimator(ItemAnimatorHelper.scaleIn());
+
 
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

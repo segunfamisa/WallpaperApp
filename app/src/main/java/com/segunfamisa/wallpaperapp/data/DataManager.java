@@ -1,6 +1,7 @@
 package com.segunfamisa.wallpaperapp.data;
 
-import com.segunfamisa.wallpaperapp.data.api.ApiService;
+import android.graphics.Bitmap;
+
 import com.segunfamisa.wallpaperapp.data.api.PhotoService;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
 
@@ -26,5 +27,9 @@ public class DataManager {
 
     public Observable<ArrayList<Photo>> getPhotos(int count) {
         return mPhotoService.getPhotos(count);
+    }
+
+    public Observable<Bitmap> savePhoto(Photo photo) {
+        return null;
     }
 }

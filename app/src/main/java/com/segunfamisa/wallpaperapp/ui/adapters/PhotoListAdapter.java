@@ -1,11 +1,15 @@
 package com.segunfamisa.wallpaperapp.ui.adapters;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorCompat;
+import android.support.v7.view.ViewPropertyAnimatorCompatSet;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -26,10 +30,13 @@ import butterknife.ButterKnife;
  */
 public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.PhotoViewHolder> {
 
-    ArrayList<Photo> photos;
-
+    private int lastPosition;
+    private ArrayList<Photo> photos;
     private OnPhotoClickedListener mPhotoClickListener;
 
+    /**
+     * Interface to implement click listener
+     */
     public interface OnPhotoClickedListener {
         void OnPhotoClicked(int position, Photo photo, View view);
     }
@@ -39,6 +46,10 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.Phot
         this.photos = new ArrayList<>();
     }
 
+    /**
+     * Sets list of {@code Photo} to use
+     * @param photos photos
+     */
     public void setPhotos(ArrayList<Photo> photos) {
         this.photos = photos;
         notifyDataSetChanged();
@@ -74,7 +85,6 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.Phot
                 }
             }
         });
-
     }
 
     @Override
