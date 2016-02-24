@@ -21,7 +21,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
         android:minHeight="?attr/actionBarSize"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -55,16 +54,34 @@
 
     </RelativeLayout>
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:fab_icon="@drawable/ic_photo_placeholder"
-        app:fab_colorNormal="#F1f1f1"
-        app:fab_colorPressed="#f1f1f1"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/fab_margin"
+        app:menu_colorRipple="#99FFFFFF"
         android:visibility="gone"
-        android:layout_margin="@dimen/fab_margin"/>
+        >
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_item_set_wallpaper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_set_wallpaper"
+            app:fab_size="mini"
+            app:fab_label="@string/menu_action_set_wallpaper" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_item_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_download"
+            app:fab_size="mini"
+            app:fab_label="@string/menu_action_download_image" />
+
+
+    </com.github.clans.fab.FloatingActionMenu>
 
 </RelativeLayout>

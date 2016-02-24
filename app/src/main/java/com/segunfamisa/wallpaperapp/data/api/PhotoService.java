@@ -22,11 +22,7 @@ import rx.Observable;
  */
 public interface PhotoService {
 
-    String BASE_URL = "https://api.unsplash.com/";
-
-    String CLIENT_ID = "8c63042b7286eac89ac8c9c73673d368c89dbc2575ba29dcb0a3b3b25880b2f6";
-
-    @GET("/photos/?client_id=" + CLIENT_ID)
+    @GET("/photos/?client_id=" + ApiConstants.CLIENT_ID)
     Observable<ArrayList<Photo>> getPhotos(@Query("per_page")int count);
 
     /**
@@ -48,7 +44,7 @@ public interface PhotoService {
                     .create();
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl(ApiConstants.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .client(httpClient.build())

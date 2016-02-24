@@ -20,7 +20,16 @@
     <string name="dialog_daily_limit_message">Uhmm…It looks like we\'ve delivered today\'s wallpapers.
         We\'ll deliver a fresh set tomorrow</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- menu action for set wallpaper -->
+    <string name="menu_action_set_wallpaper">Set wallpaper</string>
+
+    <!-- menu action for download image -->
+    <string name="menu_action_download_image">Download image</string>
+    
+    <!-- dialog title for permission -->
+    <string name="dialog_title_required_permission">Required permission</string>
+
+    <!-- dialog ok button -->
+    <string name="dialog_ok_button_text">OK</string>
 
 </resources>
