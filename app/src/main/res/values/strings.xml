@@ -32,4 +32,11 @@
     <!-- dialog ok button -->
     <string name="dialog_ok_button_text">OK</string>
 
+    <!-- notification title photo saved successfulyy -->
+    <string name="notif_title_save_successful">Photo saved.</string>
+
+    <string name="notif_title_saving">Saving photo...</string>
+
+    <string name="notif_title_save_error">Error saving photo</string>
+
 </resources>

@@ -26,6 +26,9 @@
         </activity>
 
 
+        <!-- services -->
+        <service android:name=".services.DownloadPhotoIntentService" />
+
     </application>
 
 </manifest>
