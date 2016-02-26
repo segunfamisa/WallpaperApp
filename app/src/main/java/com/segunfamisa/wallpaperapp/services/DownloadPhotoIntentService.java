@@ -5,15 +5,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.segunfamisa.wallpaperapp.R;
+import com.segunfamisa.wallpaperapp.data.DataManager;
+import com.segunfamisa.wallpaperapp.data.api.PhotoService;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
 
 import org.parceler.Parcels;
@@ -22,6 +19,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.inject.Inject;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * {@code IntentService} to download a photo
@@ -41,7 +48,6 @@ public class DownloadPhotoIntentService extends IntentService {
 
     private Photo mPhoto;
     private int mAction;
-
 
     private static Intent getCallingIntent(Context context, Photo photo) {
         Intent intent = new Intent(context, DownloadPhotoIntentService.class);
@@ -74,6 +80,13 @@ public class DownloadPhotoIntentService extends IntentService {
     }
 
     /**
+     * Constructor
+     */
+    public DownloadPhotoIntentService() {
+        super(DownloadPhotoIntentService.class.getName());
+    }
+
+    /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
      * @param name Used to name the worker thread, important only for debugging.
@@ -83,9 +96,16 @@ public class DownloadPhotoIntentService extends IntentService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+
+
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
         if(intent.hasExtra(ARG_PHOTO)) {
-            mPhoto = intent.getParcelableExtra(ARG_PHOTO);
+            mPhoto = Parcels.unwrap(intent.getParcelableExtra(ARG_PHOTO));
             mAction = intent.getIntExtra(ARG_ACTION, ACTION_DOWNLOAD);
 
             if(mPhoto != null) {
@@ -106,33 +126,57 @@ public class DownloadPhotoIntentService extends IntentService {
             .setSmallIcon(R.drawable.ic_notification_download);
     }
 
-    private void doDownload(Photo photo) {
-        //TODO show notification
-//        mBuilder.setProgress(0, 0, true);
-//        mNotificationManager.notify(time, mBuilder.build());
+    private void doDownload(final Photo photo) {
+        setupNotification();
+        final long time = System.currentTimeMillis();
+        mBuilder.setProgress(0, 0, true);
+        mNotificationManager.notify((int) time, mBuilder.build());
 
-        Glide.with(this)
-                .load(photo.getPhotoUrls().getFull())
-                .into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        //TODO dismiss notification
+        try {
+            OkHttpClient client = new OkHttpClient();
 
-                        Bitmap bitmap = ((GlideBitmapDrawable) resource).getBitmap();
-                        File file = getOutputMediaFile(mPhoto.getId());
-                        if(saveFile(bitmap, file)) {
-                            //save file was successful
-                            //return the path through a broadcast receiver or something.
-                            if(mAction == ACTION_SET_WALLPAPER) {
-                                sendSetWallpaperResult(file.getAbsolutePath());
-                            }
+            final Request req = new Request.Builder()
+                    .url(photo.getPhotoUrls().getRegular())
+                    .build();
+
+            client.newCall(req).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    mBuilder.setProgress(0, 0, false);
+                    mBuilder.setContentTitle(getString(R.string.notif_title_save_error));
+                    mNotificationManager.notify((int) time, mBuilder.build());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    InputStream is = response.body().byteStream();
+                    Bitmap bmp = BitmapFactory.decodeStream(is);
+                    File file = getOutputMediaFile(photo.getId());
+
+                    mBuilder.setProgress(0, 0, false);
+
+                    if(bmp != null && file != null && saveFile(bmp, file)) {
+                        mBuilder.setContentTitle(getString(R.string.notif_title_save_successful));
+
+                        if (mAction == ACTION_SET_WALLPAPER) {
+                            sendSetWallpaperResult(file.getAbsolutePath());
                         }
+                    } else {
+                        mBuilder.setContentTitle(getString(R.string.notif_title_save_error));
                     }
-                });
+
+                    mNotificationManager.notify((int) time, mBuilder.build());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     /**
-     * Sends a broadcast that the download is done, sends the filepath as extra
+     * Sends a broadcast that the download is  done, sends the filepath as extra
      * @param fileName
      */
     private void sendSetWallpaperResult(String fileName) {
@@ -142,6 +186,13 @@ public class DownloadPhotoIntentService extends IntentService {
         sendBroadcast(resultIntent);
     }
 
+    /**
+     * Saves the bitmap into a file
+     *
+     * @param bitmap
+     * @param file
+     * @return true if it was saved successfully, false otherwise.
+     */
     private boolean saveFile(Bitmap bitmap, File file) {
         if(file != null && bitmap != null) {
             FileOutputStream out = null;
@@ -158,6 +209,41 @@ public class DownloadPhotoIntentService extends IntentService {
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Saves file from input stream
+     *
+     * @param inputStream
+     * @param file
+     * @return
+     */
+    private boolean saveFile(InputStream inputStream, File file) {
+        try {
+            OutputStream os = new FileOutputStream(file);
+            byte[] buffer = new byte[1024];
+            int read;
+
+            while((read = inputStream.read(buffer)) != -1) {
+                os.write(buffer, 0, read);
+            }
+
+            os.flush();
+            os.close();
+
+            return true;
+        } catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return false;
@@ -182,11 +268,9 @@ public class DownloadPhotoIntentService extends IntentService {
                     return null;
                 }
             }
-
             // Create a media file name
-            File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+            return new File(mediaStorageDir.getPath() + File.separator +
                     photoId + ".jpg");
-            return mediaFile;
         }
         return null;
     }

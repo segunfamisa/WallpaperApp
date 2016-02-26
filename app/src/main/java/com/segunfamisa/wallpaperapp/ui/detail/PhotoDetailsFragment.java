@@ -32,6 +32,7 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.segunfamisa.wallpaperapp.R;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
+import com.segunfamisa.wallpaperapp.services.DownloadPhotoIntentService;
 import com.segunfamisa.wallpaperapp.ui.base.BaseFragment;
 import com.segunfamisa.wallpaperapp.utils.DialogUtils;
 
@@ -158,6 +159,8 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
             //check permission for storage
             if(checkForStoragePermission()) {
                 //start download service
+                Intent downloadIntent = DownloadPhotoIntentService.getCallingIntentForDownload(getContext(), mPhoto);
+                getActivity().startService(downloadIntent);
             }
         } else if (v == mFabSetWallpaper) {
 

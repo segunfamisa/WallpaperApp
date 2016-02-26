@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import retrofit2.Response;
 import rx.Observable;
 
 /**
@@ -27,9 +28,5 @@ public class DataManager {
 
     public Observable<ArrayList<Photo>> getPhotos(int count) {
         return mPhotoService.getPhotos(count);
-    }
-
-    public Observable<Bitmap> savePhoto(Photo photo) {
-        return null;
     }
 }

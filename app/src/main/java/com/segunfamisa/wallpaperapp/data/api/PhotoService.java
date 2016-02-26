@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -24,6 +25,9 @@ public interface PhotoService {
 
     @GET("/photos/?client_id=" + ApiConstants.CLIENT_ID)
     Observable<ArrayList<Photo>> getPhotos(@Query("per_page")int count);
+
+    @GET
+    Observable<Response> downloadPhoto(String photo);
 
     /**
      * helper class to create new services
