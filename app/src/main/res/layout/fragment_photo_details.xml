@@ -8,6 +8,12 @@
     tools:context="com.segunfamisa.wallpaperapp.ui.detail.PhotoDetailsFragment"
     android:clickable="true">
 
+    <!-- Progress -->
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
     <!-- ImageView -->
     <ImageView
         android:id="@+id/imageview_photo"

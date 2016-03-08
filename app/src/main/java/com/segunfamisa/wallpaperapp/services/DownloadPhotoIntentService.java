@@ -2,12 +2,15 @@ package com.segunfamisa.wallpaperapp.services;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
+
 import com.segunfamisa.wallpaperapp.R;
 import com.segunfamisa.wallpaperapp.data.DataManager;
 import com.segunfamisa.wallpaperapp.data.api.PhotoService;
@@ -41,6 +44,9 @@ public class DownloadPhotoIntentService extends IntentService {
     private static final int ACTION_DOWNLOAD = 100;
     private static final int ACTION_SET_WALLPAPER = 200;
 
+    private static boolean mInterrupted = false;
+
+    public static final String FILTER_SET_WALLPAPER = "com.segunfamisa.wallpaperapp.SetWallPaper";
     public static final String ACTION_DONE = "com.segunfamisa.wallpaperapp.DownloadPhoto.Done";
     public static final String ACTION_ERROR = "com.segunfamisa.wallpaperapp.DownloadPhoto.Error";
     public static final String EXTRA_FILENAME = "extra_filename";
@@ -48,6 +54,8 @@ public class DownloadPhotoIntentService extends IntentService {
 
     private Photo mPhoto;
     private int mAction;
+
+    private static Call call;
 
     private static Intent getCallingIntent(Context context, Photo photo) {
         Intent intent = new Intent(context, DownloadPhotoIntentService.class);
@@ -139,7 +147,9 @@ public class DownloadPhotoIntentService extends IntentService {
                     .url(photo.getPhotoUrls().getRegular())
                     .build();
 
-            client.newCall(req).enqueue(new Callback() {
+            call = client.newCall(req);
+
+            call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     mBuilder.setProgress(0, 0, false);
@@ -154,15 +164,18 @@ public class DownloadPhotoIntentService extends IntentService {
                     File file = getOutputMediaFile(photo.getId());
 
                     mBuilder.setProgress(0, 0, false);
-
+                    mBuilder.setContentTitle(getString(R.string.app_name));
                     if(bmp != null && file != null && saveFile(bmp, file)) {
-                        mBuilder.setContentTitle(getString(R.string.notif_title_save_successful));
+                        mBuilder.setContentText(getString(R.string.notif_title_save_successful));
 
-                        if (mAction == ACTION_SET_WALLPAPER) {
+                        if (mAction == ACTION_SET_WALLPAPER & !mInterrupted) {
+                            WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+                            wallpaperManager.setBitmap(bmp);
+
                             sendSetWallpaperResult(file.getAbsolutePath());
                         }
                     } else {
-                        mBuilder.setContentTitle(getString(R.string.notif_title_save_error));
+                        mBuilder.setContentText(getString(R.string.notif_title_save_error));
                     }
 
                     mNotificationManager.notify((int) time, mBuilder.build());
@@ -215,41 +228,6 @@ public class DownloadPhotoIntentService extends IntentService {
     }
 
     /**
-     * Saves file from input stream
-     *
-     * @param inputStream
-     * @param file
-     * @return
-     */
-    private boolean saveFile(InputStream inputStream, File file) {
-        try {
-            OutputStream os = new FileOutputStream(file);
-            byte[] buffer = new byte[1024];
-            int read;
-
-            while((read = inputStream.read(buffer)) != -1) {
-                os.write(buffer, 0, read);
-            }
-
-            os.flush();
-            os.close();
-
-            return true;
-        } catch (FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    /**
      * Create a File for saving an image or video
      *
      * @param photoId Photo Id
@@ -273,5 +251,10 @@ public class DownloadPhotoIntentService extends IntentService {
                     photoId + ".jpg");
         }
         return null;
+    }
+
+    public static void interrupt() {
+        mInterrupted = true;
+        call.cancel();
     }
 }
