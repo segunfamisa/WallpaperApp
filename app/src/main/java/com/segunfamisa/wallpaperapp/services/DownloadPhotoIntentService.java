@@ -44,6 +44,8 @@ public class DownloadPhotoIntentService extends IntentService {
     private static final int ACTION_DOWNLOAD = 100;
     private static final int ACTION_SET_WALLPAPER = 200;
 
+    private static boolean mInterrupted = false;
+
     public static final String FILTER_SET_WALLPAPER = "com.segunfamisa.wallpaperapp.SetWallPaper";
     public static final String ACTION_DONE = "com.segunfamisa.wallpaperapp.DownloadPhoto.Done";
     public static final String ACTION_ERROR = "com.segunfamisa.wallpaperapp.DownloadPhoto.Error";
@@ -52,6 +54,8 @@ public class DownloadPhotoIntentService extends IntentService {
 
     private Photo mPhoto;
     private int mAction;
+
+    private static Call call;
 
     private static Intent getCallingIntent(Context context, Photo photo) {
         Intent intent = new Intent(context, DownloadPhotoIntentService.class);
@@ -143,7 +147,9 @@ public class DownloadPhotoIntentService extends IntentService {
                     .url(photo.getPhotoUrls().getRegular())
                     .build();
 
-            client.newCall(req).enqueue(new Callback() {
+            call = client.newCall(req);
+
+            call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     mBuilder.setProgress(0, 0, false);
@@ -162,7 +168,7 @@ public class DownloadPhotoIntentService extends IntentService {
                     if(bmp != null && file != null && saveFile(bmp, file)) {
                         mBuilder.setContentText(getString(R.string.notif_title_save_successful));
 
-                        if (mAction == ACTION_SET_WALLPAPER) {
+                        if (mAction == ACTION_SET_WALLPAPER & !mInterrupted) {
                             WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
                             wallpaperManager.setBitmap(bmp);
 
@@ -245,5 +251,10 @@ public class DownloadPhotoIntentService extends IntentService {
                     photoId + ".jpg");
         }
         return null;
+    }
+
+    public static void interrupt() {
+        mInterrupted = true;
+        call.cancel();
     }
 }

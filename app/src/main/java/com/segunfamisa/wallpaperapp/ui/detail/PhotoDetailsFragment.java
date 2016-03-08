@@ -2,6 +2,7 @@ package com.segunfamisa.wallpaperapp.ui.detail;
 
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,6 +39,7 @@ import com.segunfamisa.wallpaperapp.R;
 import com.segunfamisa.wallpaperapp.data.model.Photo;
 import com.segunfamisa.wallpaperapp.services.DownloadPhotoIntentService;
 import com.segunfamisa.wallpaperapp.ui.base.BaseFragment;
+import com.segunfamisa.wallpaperapp.utils.AppUtils;
 import com.segunfamisa.wallpaperapp.utils.DialogUtils;
 
 import org.parceler.Parcels;
@@ -88,12 +90,17 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
 
     Drawable mBackDrawable;
 
+    private ProgressDialog mDialogSetWallpaper;
+
     private IntentFilter mIntentFilter;
 
     private final BroadcastReceiver mWallpaperSetReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equalsIgnoreCase(DownloadPhotoIntentService.ACTION_DONE)) {
+                if(mDialogSetWallpaper != null && mDialogSetWallpaper.isShowing()) {
+                    mDialogSetWallpaper.dismiss();
+                }
                 //show toast.
                 Toast.makeText(getContext(), "Wallpaper updated!", Toast.LENGTH_SHORT).show();
             }
@@ -127,6 +134,8 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mDialogSetWallpaper = new ProgressDialog(getActivity());
 
         mIntentFilter = new IntentFilter(DownloadPhotoIntentService.ACTION_DONE);
         getActivity().registerReceiver(mWallpaperSetReceiver, mIntentFilter);
@@ -190,6 +199,19 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         } else if (v == mFabSetWallpaper) {
             //check permission for storage
             if(checkForStoragePermission()) {
+                mDialogSetWallpaper.setMessage("Setting wallpaper, please wait...");
+                mDialogSetWallpaper.setCancelable(true);
+                mDialogSetWallpaper.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        if(AppUtils.isServiceRunning(getContext(), DownloadPhotoIntentService.class)) {
+                            //interrupt the service
+                            DownloadPhotoIntentService.interrupt();
+                        }
+                    }
+                });
+                mDialogSetWallpaper.show();
+
                 //start download service
                 Intent downloadIntent = DownloadPhotoIntentService.getCallingIntentForSetWallPaper(getContext(), mPhoto);
                 getActivity().startService(downloadIntent);
