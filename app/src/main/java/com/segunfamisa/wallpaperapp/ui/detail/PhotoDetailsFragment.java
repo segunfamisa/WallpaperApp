@@ -2,9 +2,11 @@ package com.segunfamisa.wallpaperapp.ui.detail;
 
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
@@ -15,6 +17,7 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -22,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
@@ -84,6 +88,17 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
 
     Drawable mBackDrawable;
 
+    private IntentFilter mIntentFilter;
+
+    private final BroadcastReceiver mWallpaperSetReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equalsIgnoreCase(DownloadPhotoIntentService.ACTION_DONE)) {
+                //show toast.
+                Toast.makeText(getContext(), "Wallpaper updated!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
     /**
      * Gets new instance of the photo details fragment
@@ -104,8 +119,17 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
     }
 
     @Override
+    public void onDestroy() {
+        getActivity().unregisterReceiver(mWallpaperSetReceiver);
+        super.onDestroy();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mIntentFilter = new IntentFilter(DownloadPhotoIntentService.ACTION_DONE);
+        getActivity().registerReceiver(mWallpaperSetReceiver, mIntentFilter);
     }
 
     @Override
@@ -151,6 +175,7 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         }
 
         mFabDownload.setOnClickListener(this);
+        mFabSetWallpaper.setOnClickListener(this);
     }
 
     @Override
@@ -163,7 +188,12 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
                 getActivity().startService(downloadIntent);
             }
         } else if (v == mFabSetWallpaper) {
-
+            //check permission for storage
+            if(checkForStoragePermission()) {
+                //start download service
+                Intent downloadIntent = DownloadPhotoIntentService.getCallingIntentForSetWallPaper(getContext(), mPhoto);
+                getActivity().startService(downloadIntent);
+            }
         }
     }
 
@@ -175,24 +205,26 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         Palette palette = Palette.from(bitmap).generate();
 
         Palette.Swatch s = palette.getVibrantSwatch();
-        if (s == null) {
-            s = palette.getDarkVibrantSwatch();
-        }
-        if (s == null) {
-            s = palette.getLightVibrantSwatch();
-        }
-        if (s == null) {
-            s = palette.getMutedSwatch();
-        }
-        if (s != null) {
-            mBackDrawable.setColorFilter(s.getRgb(), PorterDuff.Mode.MULTIPLY);
-            fabMenu.setMenuButtonColorNormal(palette.getVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+        if(palette != null) {
+            if (s == null) {
+                s = palette.getDarkVibrantSwatch();
+            }
+            if (s == null) {
+                s = palette.getLightVibrantSwatch();
+            }
+            if (s == null) {
+                s = palette.getMutedSwatch();
+            }
+            if (s != null) {
+                mBackDrawable.setColorFilter(s.getRgb(), PorterDuff.Mode.MULTIPLY);
+                fabMenu.setMenuButtonColorNormal(palette.getVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
 
-            mFabDownload.setColorNormal(palette.getLightVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
-            mFabDownload.setColorPressed(palette.getDarkVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark)));
+                mFabDownload.setColorNormal(palette.getLightVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                mFabDownload.setColorPressed(palette.getDarkVibrantColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark)));
 
-            mFabSetWallpaper.setColorNormal(palette.getMutedColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
-            mFabSetWallpaper.setColorPressed(palette.getDarkMutedColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark)));
+                mFabSetWallpaper.setColorNormal(palette.getMutedColor(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                mFabSetWallpaper.setColorPressed(palette.getDarkMutedColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark)));
+            }
         }
     }
 
