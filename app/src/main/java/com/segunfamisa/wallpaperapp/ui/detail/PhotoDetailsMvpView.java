@@ -12,6 +12,7 @@ public interface PhotoDetailsMvpView extends MVPView {
 
     void showDetails(Photo photo);
 
-    void onDownloadPhoto(Bitmap photoBitmap);
-    void onDownloadPhotoError(String message);
+    void setWallpaper(Photo photo);
+    void savePicture(Photo photo);
+
 }
