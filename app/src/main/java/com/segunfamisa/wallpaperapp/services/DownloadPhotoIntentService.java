@@ -106,12 +106,11 @@ public class DownloadPhotoIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-
-
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        mInterrupted = false;
         if(intent.hasExtra(ARG_PHOTO)) {
             mPhoto = Parcels.unwrap(intent.getParcelableExtra(ARG_PHOTO));
             mAction = intent.getIntExtra(ARG_ACTION, ACTION_DOWNLOAD);
@@ -185,6 +184,7 @@ public class DownloadPhotoIntentService extends IntentService {
                             }
                         } else {
                             mBuilder.setContentText(getString(R.string.notif_title_save_error));
+                            sendErrorResult(new Exception("Unable to create bitmap"));
                         }
                     } catch (Exception e) {
                         mBuilder.setContentTitle(getString(R.string.notif_title_save_error));
@@ -209,6 +209,7 @@ public class DownloadPhotoIntentService extends IntentService {
         Intent resultIntent = new Intent();
         resultIntent.setAction(ACTION_ERROR);
         resultIntent.putExtra(EXTRA_ERROR, e.toString());
+        sendBroadcast(resultIntent);
     }
     /**
      * Sends a broadcast that the download is  done, sends the filepath as extra

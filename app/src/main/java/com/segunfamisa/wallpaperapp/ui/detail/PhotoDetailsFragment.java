@@ -103,7 +103,7 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
                 }
                 //show toast.
                 Toast.makeText(getContext(), "Wallpaper updated!", Toast.LENGTH_SHORT).show();
-            } else if (intent.getAction().equals(DownloadPhotoIntentService.ACTION_ERROR)) {
+            } else if (intent.getAction().equalsIgnoreCase(DownloadPhotoIntentService.ACTION_ERROR)) {
                 if(mDialogSetWallpaper != null && mDialogSetWallpaper.isShowing()) {
                     mDialogSetWallpaper.dismiss();
                 }
@@ -192,7 +192,7 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         }
 
         mFabDownload.setOnClickListener(this);
-        mFabSetWallpaper.setOnClickListener(this);
+        mFabSetWallpaper.setOnClickListener(this)
     }
 
     @Override
