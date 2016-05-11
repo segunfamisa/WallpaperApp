@@ -8,4 +8,10 @@
         <attr name="overlayColor" format="color" />
     </declare-styleable>
 
+    <!--Scrim insets vie that allows the drawer the be behind the status bar and visible -->
+    <declare-styleable name="ScrimInsetsFrameLayout">
+        <attr name="insetForeground" format="reference|color" />
+    </declare-styleable>
+
+
 </resources>

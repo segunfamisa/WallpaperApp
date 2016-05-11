@@ -103,6 +103,14 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
                 }
                 //show toast.
                 Toast.makeText(getContext(), "Wallpaper updated!", Toast.LENGTH_SHORT).show();
+            } else if (intent.getAction().equalsIgnoreCase(DownloadPhotoIntentService.ACTION_ERROR)) {
+                if(mDialogSetWallpaper != null && mDialogSetWallpaper.isShowing()) {
+                    mDialogSetWallpaper.dismiss();
+                }
+                //show error toast
+                Toast.makeText(getContext(), "Something went wrong: \n" +
+                        intent.getStringExtra(DownloadPhotoIntentService.EXTRA_ERROR),
+                        Toast.LENGTH_SHORT).show();
             }
         }
     };

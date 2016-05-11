@@ -106,12 +106,11 @@ public class DownloadPhotoIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-
-
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        mInterrupted = false;
         if(intent.hasExtra(ARG_PHOTO)) {
             mPhoto = Parcels.unwrap(intent.getParcelableExtra(ARG_PHOTO));
             mAction = intent.getIntExtra(ARG_ACTION, ACTION_DOWNLOAD);
@@ -120,6 +119,10 @@ public class DownloadPhotoIntentService extends IntentService {
                 //download photo
                 doDownload(mPhoto);
             }
+        }
+
+        while (!mInterrupted) {
+            //do nothing, just keep looping if not interrupted
         }
     }
 
@@ -152,32 +155,41 @@ public class DownloadPhotoIntentService extends IntentService {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    interrupt();
                     mBuilder.setProgress(0, 0, false);
                     mBuilder.setContentTitle(getString(R.string.notif_title_save_error));
                     mNotificationManager.notify((int) time, mBuilder.build());
+                    sendErrorResult(e);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    InputStream is = response.body().byteStream();
-                    Bitmap bmp = BitmapFactory.decodeStream(is);
-                    File file = getOutputMediaFile(photo.getId());
-
+                    interrupt();
                     mBuilder.setProgress(0, 0, false);
                     mBuilder.setContentTitle(getString(R.string.app_name));
-                    if(bmp != null && file != null && saveFile(bmp, file)) {
-                        mBuilder.setContentText(getString(R.string.notif_title_save_successful));
+                    try {
+                        InputStream is = response.body().byteStream();
+                        Bitmap bmp = BitmapFactory.decodeStream(is);
+                        File file = getOutputMediaFile(photo.getId());
 
-                        if (mAction == ACTION_SET_WALLPAPER & !mInterrupted) {
-                            WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-                            wallpaperManager.setBitmap(bmp);
 
-                            sendSetWallpaperResult(file.getAbsolutePath());
+                        if(bmp != null && file != null && saveFile(bmp, file)) {
+                            mBuilder.setContentText(getString(R.string.notif_title_save_successful));
+
+                            if (mAction == ACTION_SET_WALLPAPER & !mInterrupted) {
+                                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+                                wallpaperManager.setBitmap(bmp);
+
+                                sendSetWallpaperResult(file.getAbsolutePath());
+                            }
+                        } else {
+                            mBuilder.setContentText(getString(R.string.notif_title_save_error));
+                            sendErrorResult(new Exception("Unable to create bitmap"));
                         }
-                    } else {
-                        mBuilder.setContentText(getString(R.string.notif_title_save_error));
+                    } catch (Exception e) {
+                        mBuilder.setContentTitle(getString(R.string.notif_title_save_error));
+                        sendErrorResult(e);
                     }
-
                     mNotificationManager.notify((int) time, mBuilder.build());
                 }
             });
@@ -188,6 +200,17 @@ public class DownloadPhotoIntentService extends IntentService {
 
     }
 
+    /**
+     * Sends a broadcast that the download encountered ane rror
+     *
+     * @param e
+     */
+    private void sendErrorResult(Exception e) {
+        Intent resultIntent = new Intent();
+        resultIntent.setAction(ACTION_ERROR);
+        resultIntent.putExtra(EXTRA_ERROR, e.toString());
+        sendBroadcast(resultIntent);
+    }
     /**
      * Sends a broadcast that the download is  done, sends the filepath as extra
      * @param fileName
