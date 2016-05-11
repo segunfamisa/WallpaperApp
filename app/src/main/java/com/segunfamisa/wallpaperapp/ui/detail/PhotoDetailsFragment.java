@@ -192,7 +192,7 @@ public class PhotoDetailsFragment extends BaseFragment implements View.OnClickLi
         }
 
         mFabDownload.setOnClickListener(this);
-        mFabSetWallpaper.setOnClickListener(this)
+        mFabSetWallpaper.setOnClickListener(this);
     }
 
     @Override
